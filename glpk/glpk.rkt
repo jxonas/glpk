@@ -181,7 +181,11 @@ typedef struct
       int rs_size;            /* lpf.v_size */
       double foo_bar[38];     /* (reserved) */
 } glp_bfcp;
+|#
 
+;; TODO
+
+#|
 typedef struct
 {     /* simplex method control parameters */
       int msg_lev;            /* message level: */
@@ -212,6 +216,11 @@ typedef struct
       int presolve;           /* enable/disable using LP presolver */
       double foo_bar[36];     /* (reserved) */
 } glp_smcp;
+|#
+
+;; TODO
+
+#|
 
 typedef struct
 {     /* interior-point solver control parameters */
@@ -223,7 +232,11 @@ typedef struct
 #define GLP_ORD_SYMAMD     3  /* approx. minimum degree (SYMAMD) */
       double foo_bar[48];     /* (reserved) */
 } glp_iptcp;
+|#
 
+;; TODO
+
+#|
 typedef struct glp_tree glp_tree;
 /* branch-and-bound tree */
 
@@ -277,7 +290,11 @@ typedef struct
 #endif
       double foo_bar[25];     /* (reserved) */
 } glp_iocp;
+|#
 
+;; TODO
+
+#|
 typedef struct
 {     /* additional row attributes */
       int level;
@@ -296,11 +313,20 @@ typedef struct
       double foo_bar[7];
       /* (reserved) */
 } glp_attr;
+|#
 
+;; TODO
+
+#|
 /* enable/disable flag: */
 #define GLP_ON             1  /* enable something */
 #define GLP_OFF            0  /* disable something */
+|#
 
+(define ON  1)
+(define OFF 0)
+
+#|
 /* reason codes: */
 #define GLP_IROWGEN     0x01  /* request for row generation */
 #define GLP_IBINGO      0x02  /* better integer solution found */
@@ -309,12 +335,28 @@ typedef struct
 #define GLP_IBRANCH     0x05  /* request for branching */
 #define GLP_ISELECT     0x06  /* request for subproblem selection */
 #define GLP_IPREPRO     0x07  /* request for preprocessing */
+|#
 
+(define IROWGEN #x01)
+(define IBINGO  #x02)
+(define IHEUR   #x03)
+(define ICUTGEN #x04)
+(define IBRANCH #x05)
+(define ISELECT #x06)
+(define IPREPRO #x07)
+
+#|
 /* branch selection indicator: */
 #define GLP_NO_BRNCH       0  /* select no branch */
 #define GLP_DN_BRNCH       1  /* select down-branch */
 #define GLP_UP_BRNCH       2  /* select up-branch */
+|#
 
+(define NO-BRNCH 0)
+(define DN-BRNCH 1)
+(define UP-BRNCH 2)
+
+#|
 /* return codes: */
 #define GLP_EBADB       0x01  /* invalid basis */
 #define GLP_ESING       0x02  /* singular matrix */
@@ -335,14 +377,40 @@ typedef struct
 #define GLP_EINSTAB     0x11  /* numerical instability */
 #define GLP_EDATA       0x12  /* invalid data */
 #define GLP_ERANGE      0x13  /* result out of range */
+|#
 
+(define GLP_EBADB       #x01)
+(define GLP_ESING       #x02)
+(define GLP_ECOND       #x03)
+(define GLP_EBOUND      #x04)
+(define GLP_EFAIL       #x05)
+(define GLP_EOBJLL      #x06)
+(define GLP_EOBJUL      #x07)
+(define GLP_EITLIM      #x08)
+(define GLP_ETMLIM      #x09)
+(define GLP_ENOPFS      #x0A)
+(define GLP_ENODFS      #x0B)
+(define GLP_EROOT       #x0C)
+(define GLP_ESTOP       #x0D)
+(define GLP_EMIPGAP     #x0E)
+(define GLP_ENOFEAS     #x0F)
+(define GLP_ENOCVG      #x10)
+(define GLP_EINSTAB     #x11)
+(define GLP_EDATA       #x12)
+(define GLP_ERANGE      #x13)
+
+#|
 /* condition indicator: */
 #define GLP_KKT_PE         1  /* primal equalities */
 #define GLP_KKT_PB         2  /* primal bounds */
 #define GLP_KKT_DE         3  /* dual equalities */
 #define GLP_KKT_DB         4  /* dual bounds */
 #define GLP_KKT_CS         5  /* complementary slackness */
+|#
 
+;; TODO
+
+#|
 /* MPS file format: */
 #define GLP_MPS_DECK       1  /* fixed (ancient) */
 #define GLP_MPS_FILE       2  /* free (modern) */
