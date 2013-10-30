@@ -14,8 +14,10 @@
     [(macosx) (with-handlers ()
                 (ffi-lib mac-dll-path '("35")))]))
 
-;; headers taken from release of portaudio.h
+;; headers taken from release of glpk.h version 4.52
+
 ;; initial block:
+
 #|
 /* glpk.h */
 
