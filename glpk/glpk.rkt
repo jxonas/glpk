@@ -394,25 +394,25 @@ typedef struct
 #define GLP_ERANGE      0x13  /* result out of range */
 |#
 
-(define GLP_EBADB       #x01)
-(define GLP_ESING       #x02)
-(define GLP_ECOND       #x03)
-(define GLP_EBOUND      #x04)
-(define GLP_EFAIL       #x05)
-(define GLP_EOBJLL      #x06)
-(define GLP_EOBJUL      #x07)
-(define GLP_EITLIM      #x08)
-(define GLP_ETMLIM      #x09)
-(define GLP_ENOPFS      #x0A)
-(define GLP_ENODFS      #x0B)
-(define GLP_EROOT       #x0C)
-(define GLP_ESTOP       #x0D)
-(define GLP_EMIPGAP     #x0E)
-(define GLP_ENOFEAS     #x0F)
-(define GLP_ENOCVG      #x10)
-(define GLP_EINSTAB     #x11)
-(define GLP_EDATA       #x12)
-(define GLP_ERANGE      #x13)
+(define EBADB       #x01)
+(define ESING       #x02)
+(define ECOND       #x03)
+(define EBOUND      #x04)
+(define EFAIL       #x05)
+(define EOBJLL      #x06)
+(define EOBJUL      #x07)
+(define EITLIM      #x08)
+(define ETMLIM      #x09)
+(define ENOPFS      #x0A)
+(define ENODFS      #x0B)
+(define EROOT       #x0C)
+(define ESTOP       #x0D)
+(define EMIPGAP     #x0E)
+(define ENOFEAS     #x0F)
+(define ENOCVG      #x10)
+(define EINSTAB     #x11)
+(define EDATA       #x12)
+(define ERANGE      #x13)
 
 #|
 /* condition indicator: */
@@ -423,13 +423,22 @@ typedef struct
 #define GLP_KKT_CS         5  /* complementary slackness */
 |#
 
-;; TODO
+(define KKT-PE 1)
+(define KKT-PB 2)
+(define KKT-DE 3)
+(define KKT-DB 4)
+(define KKT-CS 5)
 
 #|
 /* MPS file format: */
 #define GLP_MPS_DECK       1  /* fixed (ancient) */
 #define GLP_MPS_FILE       2  /* free (modern) */
+|#
 
+(define MPS-DECK 1)
+(define MPS-FILE 2)
+
+#|
 typedef struct
 {     /* MPS format control parameters */
       int blank;
@@ -441,16 +450,28 @@ typedef struct
       double foo_bar[17];
       /* (reserved for use in the future) */
 } glp_mpscp;
+|#
 
+;; TODO
+
+#|
 typedef struct
 {     /* CPLEX LP format control parameters */
       double foo_bar[20];
       /* (reserved for use in the future) */
 } glp_cpxcp;
+|#
 
+;; TODO
+
+#|
 typedef struct glp_tran glp_tran;
 /* MathProg translator workspace */
+|#
 
+;; TODO
+
+#|
 glp_prob *glp_create_prob(void);
 /* create problem object */
 |#
