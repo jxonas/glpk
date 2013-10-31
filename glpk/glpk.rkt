@@ -6,15 +6,30 @@
 (provide (all-defined-out))
 
 (define-runtime-path lib-path "lib")
-
+;; use local copies of glpk for Windows & Mac
+(define win-dll-path (build-path lib-path (system-library-subpath) "glpk"))
 (define mac-dll-path (build-path lib-path "libglpk"))
+
+(define linux-err-msg
+  "Note: on Linux, you need to install the glpk library yourself. Underlying error message: ~a")
 
 (define libglpk 
   (case (system-type)
-    [(macosx) (with-handlers ()
-                (ffi-lib mac-dll-path '("35")))]))
+    [(windows) (ffi-lib win-dll-path)]
+    [(macosx)  (ffi-lib mac-dll-path '("35" ""))]
+    [(unix)    (with-handlers
+                   ([exn:fail?
+                     (lambda (exn)
+                       (error 'glpk
+                              linux-err-msg
+                              (exn-message exn)))])
+                 (ffi-lib "libglpk" '("35" "")))]))
 
-;; headers taken from release of glpk.h version 4.52
+;; headers taken from release of glpk.h
+
+;; note that every line of the header file appears here verbatim; this means
+;; that you can 'diff' this file against the header file, and check that the
+;; only differences are additions to verify that the header file is up-to-date.
 
 ;; initial block:
 
