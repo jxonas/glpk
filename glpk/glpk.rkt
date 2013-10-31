@@ -81,7 +81,8 @@ typedef struct glp_prob glp_prob;
 /* LP/MIP problem object */
 |#
 
-(define-cpointer-type _prob)
+;; we use just pointers to problems...
+(define-cpointer-type _prob-ptr)
 
 #|
 /* optimization direction flag: */
@@ -198,7 +199,23 @@ typedef struct
 } glp_bfcp;
 |#
 
-;; TODO
+(define-cstruct _bfcp
+  ([msg-lev  _int]
+   [type     _int]
+   [lu-size  _int]
+   [piv-tol  _double]
+   [piv-lim  _int]
+   [suhl     _int]
+   [eps-tol  _double]
+   [max-gro  _double]
+   [nrs-max  _int]
+   [rs-size  _int]
+   [foo-bar  (_array _double 38)]))
+
+;; related to _bfcp.type
+(define BF-FT 1)
+(define BF-BG 2)
+(define BF-GR 3)
 
 #|
 typedef struct
@@ -233,7 +250,42 @@ typedef struct
 } glp_smcp;
 |#
 
-;; TODO
+(define-cstruct _smcp
+  ([msg-lev   _int]
+   [meth      _int]
+   [pricing   _int]
+   [r-test    _int]
+   [tol-bnd   _double]
+   [tol-dj    _double]
+   [tol-piv   _double]
+   [obj-ll    _double]
+   [obj-ul    _double]
+   [it-lim    _int]
+   [tm-lim    _int]
+   [out-frq   _int]
+   [out-dly   _int]
+   [presolve  _int]
+   [foo-bar   (_array _double 36)]))
+
+;; related to _smcp.msg-lev
+(define GLP_MSG_OFF 0)
+(define GLP_MSG_ERR 1)
+(define GLP_MSG_ON  2)
+(define GLP_MSG_ALL 3)
+(define GLP_MSG_DBG 4)
+
+;; related to _smcp.meth
+(define GLP_PRIMAL 1)
+(define GLP_DUALP  2)
+(define GLP_DUAL   3)
+
+;; related to _smcp.pricing
+(define GLP_PT_STD #x11)
+(define GLP_PT_PSE #x22)
+
+;; related to _smcp.r-test
+(define GLP_RT_STD #x11)
+(define GLP_RT_HAR #x22)
 
 #|
 
@@ -249,12 +301,25 @@ typedef struct
 } glp_iptcp;
 |#
 
-;; TODO
+(define-cstruct _iptcp
+  ([msg-lev _int]
+   [ord-alg _int]
+   [foo-bar (_array _double 48)]))
+
+;; related to _iptcp.ord_alg
+(define GLP_ORD_NONE    0)
+(define GLP_ORD_QMD     1)
+(define GLP_ORD_AMD     2)
+(define GLP_ORD_SYMAMD  3)
 
 #|
 typedef struct glp_tree glp_tree;
 /* branch-and-bound tree */
+|#
 
+;; TODO
+
+#|
 typedef struct
 {     /* integer optimizer control parameters */
       int msg_lev;            /* message level (see glp_smcp) */
@@ -307,7 +372,51 @@ typedef struct
 } glp_iocp;
 |#
 
-;; TODO
+(define-cstruct _iocp
+  ([msg-lev _int]
+   [br-tech _int]
+   [bt-tech _int]
+   [tol-int _double]
+   [tol-obj _double]
+   [tm-lim _int]
+   [out-frq _int]
+   [out-dly _int]
+   ; FIXME: void (*cb-func)(_tree *T, void *info)
+   [cb-info _pointer] ;void *cb-info
+   [cb-size _int]
+   [pp-tech _int]
+   [mip-gap _double]
+   [mir-cuts _int]
+   [gmi-cuts _int]
+   [cov-cuts _int]
+   [clq-cuts _int]
+   [presolve _int]
+   [binarize _int]
+   [fp-heur _int]
+   [ps-heur _int]
+   [ps-tm-lim _int]
+   [use-sol _int]
+   [save-sol _pointer] ;FIXME: const * char
+   [alien _int]
+   [foo-bar (_array _double 25)]))
+
+;; related to _iocp.br-tech
+(define BR-FFV  1)
+(define BR-LFV  2)
+(define BR-MFV  3)
+(define BR-DTH  4)
+(define BR-PCH  5)
+
+;; related to _iocp.bc-tech
+(define BT-DFS  1)
+(define BT-BFS  2)
+(define BT-BLB  3)
+(define BT-BPH  4)
+
+;; related to _iocp.pp_tech
+(define PP-NONE 0)
+(define PP-ROOT 1)
+(define PP-ALL  2)
 
 #|
 typedef struct
@@ -330,7 +439,22 @@ typedef struct
 } glp_attr;
 |#
 
-;; TODO
+(define-cstruct _attr
+  ([level     _int]
+   [origin    _int]
+   [klass     _int]
+   [foo-bar  (_array _double 7)]))
+
+;; related to _attr.origin
+(define GLP_RF_REG  0)
+(define GLP_RF_LAZY 1)
+(define GLP_RF_CUT  2)
+
+;;related to _attr.klass
+(define GLP_RF_GMI  1)
+(define GLP_RF_MIR  2)
+(define GLP_RF_COV  3)
+(define GLP_RF_CLQ  4)
 
 #|
 /* enable/disable flag: */
@@ -452,7 +576,11 @@ typedef struct
 } glp_mpscp;
 |#
 
-;; TODO
+(define-cstruct _mpscp
+  ([blank _int]
+   [obj-name _pointer]
+   [tol-mps  _double]
+   [foo-bar (_array _double 17)]))
 
 #|
 typedef struct
@@ -462,14 +590,15 @@ typedef struct
 } glp_cpxcp;
 |#
 
-;; TODO
+(define-cstruct _cpxcp
+  ([foo-bar (_array _double 20)]))
 
 #|
 typedef struct glp_tran glp_tran;
 /* MathProg translator workspace */
 |#
 
-;; TODO
+(define-cpointer-type _tran-ptr)
 
 #|
 glp_prob *glp_create_prob(void);
@@ -479,7 +608,7 @@ glp_prob *glp_create_prob(void);
 (define create-prob
   (get-ffi-obj "glp_create_prob"
                libglpk
-               (_fun -> _prob)))
+               (_fun -> _prob-ptr)))
 
 #|
 void glp_set_prob_name(glp_prob *P, const char *name);
@@ -489,7 +618,7 @@ void glp_set_prob_name(glp_prob *P, const char *name);
 (define set-prob-name
   (get-ffi-obj "glp_set_prob_name"
                libglpk
-               (_fun _prob _string -> _void)))
+               (_fun _prob-ptr _string -> _void)))
 
 #|
 void glp_set_obj_name(glp_prob *P, const char *name);
@@ -558,7 +687,7 @@ void glp_delete_prob(glp_prob *P);
 (define delete-prob
   (get-ffi-obj "glp_delete_prob"
                libglpk
-               (_fun _prob -> _void)))
+               (_fun _prob-ptr -> _void)))
 
 #|
 const char *glp_get_prob_name(glp_prob *P);
@@ -568,7 +697,7 @@ const char *glp_get_prob_name(glp_prob *P);
 (define get-prob-name
   (get-ffi-obj "glp_get_prob_name"
                libglpk
-               (_fun _prob -> _string)))
+               (_fun _prob-ptr -> _string)))
 
 #|
 const char *glp_get_obj_name(glp_prob *P);
