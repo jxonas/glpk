@@ -200,22 +200,24 @@ typedef struct
 |#
 
 (define-cstruct _bfcp
-  ([msg-lev  _int]
-   [type     _int]
-   [lu-size  _int]
-   [piv-tol  _double]
-   [piv-lim  _int]
-   [suhl     _int]
-   [eps-tol  _double]
-   [max-gro  _double]
-   [nrs-max  _int]
-   [rs-size  _int]
-   [foo-bar  (_array _double 38)]))
+  ([msg-lev   _int]
+   [type      _int]
+   [lu-size   _int]
+   [piv-tol   _double]
+   [piv-lim   _int]
+   [suhl      _int]
+   [eps-tol   _double]
+   [max-gro   _double]
+   [nfs-max   _int]
+   [upd-tol   _double]
+   [nrs-max   _int]
+   [rs-size   _int]
+   [foo-bar ( _array _double 38)]))
 
 ;; related to _bfcp.type
-(define BF-FT 1)
-(define BF-BG 2)
-(define BF-GR 3)
+(define BF-FT  1)
+(define BF-BG  2)
+(define BF-GR  3)
 
 #|
 typedef struct
@@ -265,27 +267,27 @@ typedef struct
    [out-frq   _int]
    [out-dly   _int]
    [presolve  _int]
-   [foo-bar   (_array _double 36)]))
+   [foo-bar ( _array _double 36)]))
 
 ;; related to _smcp.msg-lev
-(define GLP_MSG_OFF 0)
-(define GLP_MSG_ERR 1)
-(define GLP_MSG_ON  2)
-(define GLP_MSG_ALL 3)
-(define GLP_MSG_DBG 4)
+(define MSG-OFF    0)
+(define MSG-ERR    1)
+(define MSG-ON     2)
+(define MSG-ALL    3)
+(define MSG-DBG    4)
 
 ;; related to _smcp.meth
-(define GLP_PRIMAL 1)
-(define GLP_DUALP  2)
-(define GLP_DUAL   3)
+(define PRIMAL     1)
+(define DUALP      2)
+(define DUAL       3)
 
 ;; related to _smcp.pricing
-(define GLP_PT_STD #x11)
-(define GLP_PT_PSE #x22)
+(define PT-STD  #x11)
+(define PT-PSE  #x22)
 
 ;; related to _smcp.r-test
-(define GLP_RT_STD #x11)
-(define GLP_RT_HAR #x22)
+(define RT-STD  #x11)
+(define RT-HAR  #x22)
 
 #|
 
@@ -302,15 +304,15 @@ typedef struct
 |#
 
 (define-cstruct _iptcp
-  ([msg-lev _int]
-   [ord-alg _int]
+  ([msg-lev int]
+   [ord-alg int]
    [foo-bar (_array _double 48)]))
 
 ;; related to _iptcp.ord_alg
-(define GLP_ORD_NONE    0)
-(define GLP_ORD_QMD     1)
-(define GLP_ORD_AMD     2)
-(define GLP_ORD_SYMAMD  3)
+(define ORD-NONE    0)
+(define ORD-QMD     1)
+(define ORD-AMD     2)
+(define ORD-SYMAMD  3)
 
 #|
 typedef struct glp_tree glp_tree;
@@ -373,50 +375,50 @@ typedef struct
 |#
 
 (define-cstruct _iocp
-  ([msg-lev _int]
-   [br-tech _int]
-   [bt-tech _int]
-   [tol-int _double]
-   [tol-obj _double]
-   [tm-lim _int]
-   [out-frq _int]
-   [out-dly _int]
-   ; FIXME: void (*cb-func)(_tree *T, void *info)
-   [cb-info _pointer] ;void *cb-info
-   [cb-size _int]
-   [pp-tech _int]
-   [mip-gap _double]
-   [mir-cuts _int]
-   [gmi-cuts _int]
-   [cov-cuts _int]
-   [clq-cuts _int]
-   [presolve _int]
-   [binarize _int]
-   [fp-heur _int]
-   [ps-heur _int]
-   [ps-tm-lim _int]
-   [use-sol _int]
-   [save-sol _pointer] ;FIXME: const * char
-   [alien _int]
-   [foo-bar (_array _double 25)]))
+  ([msg-lev     _int]
+   [br-tech     _int]
+   [bt-tech     _int]
+   [tol-int     _double]
+   [tol-obj     _double]
+   [tm-lim      _int]
+   [out-frq     _int]
+   [out-dly     _int]
+   ; FIXME void (*cb _func) (glp_tree *T, void *info)
+   [cb-info     _pointer] ;void *cb-info
+   [cb-size     _int]
+   [pp-tech     _int]
+   [mip-gap     _double]
+   [mir-cuts    _int]
+   [gmi-cuts    _int]
+   [cov-cuts    _int]
+   [clq-cuts    _int]
+   [presolve    _int]
+   [binarize    _int]
+   [fp-heur     _int]
+   [ps-heur     _int]
+   [ps-tm-lim   _int]
+   [use-sol     _int]
+   [save-sol    _string] ;const char *save_sol
+   [alien       _int]
+   [foo-bar    (array _doube 25)]))
 
 ;; related to _iocp.br-tech
-(define BR-FFV  1)
-(define BR-LFV  2)
-(define BR-MFV  3)
-(define BR-DTH  4)
-(define BR-PCH  5)
+(define BR-FFV   1) 
+(define BR-LFV   2) 
+(define BR-MFV   3) 
+(define BR-DTH   4) 
+(define BR-PCH   5) 
 
-;; related to _iocp.bc-tech
-(define BT-DFS  1)
-(define BT-BFS  2)
-(define BT-BLB  3)
-(define BT-BPH  4)
+;; related to _iocp.bt-tech
+(define BT-DFS   1) 
+(define BT-BFS   2) 
+(define BT-BLB   3) 
+(define BT-BPH   4) 
 
-;; related to _iocp.pp_tech
-(define PP-NONE 0)
-(define PP-ROOT 1)
-(define PP-ALL  2)
+;; related to _iocp.pp-tech
+(define PP-NONE  0) 
+(define PP-ROOT  1) 
+(define PP-ALL   2) 
 
 #|
 typedef struct
@@ -446,15 +448,15 @@ typedef struct
    [foo-bar  (_array _double 7)]))
 
 ;; related to _attr.origin
-(define GLP_RF_REG  0)
-(define GLP_RF_LAZY 1)
-(define GLP_RF_CUT  2)
+(define RF_REG  0)
+(define RF_LAZY 1)
+(define RF_CUT  2)
 
 ;;related to _attr.klass
-(define GLP_RF_GMI  1)
-(define GLP_RF_MIR  2)
-(define GLP_RF_COV  3)
-(define GLP_RF_CLQ  4)
+(define RF_GMI  1)
+(define RF_MIR  2)
+(define RF_COV  3)
+(define RF_CLQ  4)
 
 #|
 /* enable/disable flag: */
@@ -577,10 +579,10 @@ typedef struct
 |#
 
 (define-cstruct _mpscp
-  ([blank _int]
-   [obj-name _pointer]
-   [tol-mps  _double]
-   [foo-bar (_array _double 17)]))
+  ([blank     _int]
+   [obj-name  _string]
+   [tol-mps   _double]
+   [foo-bar  (_array _double 17)]))
 
 #|
 typedef struct
