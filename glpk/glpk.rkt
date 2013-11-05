@@ -1,11 +1,14 @@
 #lang racket/base
 
 (require ffi/unsafe
-         racket/runtime-path)
+         racket/runtime-path
+         
+         (for-syntax racket/base))
 
 (provide (all-defined-out))
 
 (define-runtime-path lib-path "lib")
+
 ;; use local copies of glpk for Windows & Mac
 (define win-dll-path (build-path lib-path (system-library-subpath) "glpk"))
 (define mac-dll-path (build-path lib-path "libglpk"))
@@ -24,6 +27,21 @@
                               linux-err-msg
                               (exn-message exn)))])
                  (ffi-lib "libglpk" '("35" "")))]))
+
+(define-syntax (define-glpk stx)
+  (define (glp-name name-stx)
+    (string-append
+     "glp_" (regexp-replaces 
+             (symbol->string (syntax-e name-stx))
+             '((#rx"-" "_")
+               (#rx"!" "")))))
+  
+  (syntax-case stx (:)
+    [(_ name : type ...)
+     (with-syntax ([glp_name (glp-name #'name)])
+       #'(define name
+           (get-ffi-obj glp_name libglpk
+              (_fun type ...))))]))
 
 ;; headers taken from release of glpk.h
 
@@ -82,7 +100,11 @@ typedef struct glp_prob glp_prob;
 |#
 
 ;; we use just pointers to problems...
-(define-cpointer-type _prob-ptr)
+(define-cpointer-type _prob _pointer
+  #f ; scheme-to-c
+  (lambda (prob)
+    (when prob (register-finalizer prob delete-prob))
+    prob))
 
 #|
 /* optimization direction flag: */
@@ -304,8 +326,8 @@ typedef struct
 |#
 
 (define-cstruct _iptcp
-  ([msg-lev int]
-   [ord-alg int]
+  ([msg-lev _int]
+   [ord-alg _int]
    [foo-bar (_array _double 48)]))
 
 ;; related to _iptcp.ord_alg
@@ -400,7 +422,7 @@ typedef struct
    [use-sol     _int]
    [save-sol    _string] ;const char *save_sol
    [alien       _int]
-   [foo-bar    (array _doube 25)]))
+   [foo-bar    (_array _double 25)]))
 
 ;; related to _iocp.br-tech
 (define BR-FFV   1) 
@@ -607,51 +629,83 @@ glp_prob *glp_create_prob(void);
 /* create problem object */
 |#
 
-(define create-prob
-  (get-ffi-obj "glp_create_prob"
-               libglpk
-               (_fun -> _prob-ptr)))
+(define-glpk create-prob : -> _prob)
 
 #|
 void glp_set_prob_name(glp_prob *P, const char *name);
 /* assign (change) problem name */
 |#
 
-(define set-prob-name
-  (get-ffi-obj "glp_set_prob_name"
-               libglpk
-               (_fun _prob-ptr _string -> _void)))
+(define-glpk set-prob-name! : _prob _string -> _void)
 
 #|
 void glp_set_obj_name(glp_prob *P, const char *name);
 /* assign (change) objective function name */
+|#
 
+(define-glpk set-obj-name! : _prob _string -> _void)
+
+#|
 void glp_set_obj_dir(glp_prob *P, int dir);
 /* set (change) optimization direction flag */
+|#
 
+(define-glpk set-obj-dir! : _prob _int -> _void)
+
+#|
 int glp_add_rows(glp_prob *P, int nrs);
 /* add new rows to problem object */
+|#
+
+(define-glpk add-rows! : _prob _int -> _int)
+
+#|
 
 int glp_add_cols(glp_prob *P, int ncs);
 /* add new columns to problem object */
+|#
+
+(define-glpk add-cols! : _prob _int -> _int)
+
+#|
 
 void glp_set_row_name(glp_prob *P, int i, const char *name);
 /* assign (change) row name */
+|#
 
+(define-glpk set-row-name! : _prob _int _string -> _void)
+
+#|
 void glp_set_col_name(glp_prob *P, int j, const char *name);
 /* assign (change) column name */
+|#
 
+(define-glpk set-col-name! : _prob _int _string -> _void)
+
+#|
 void glp_set_row_bnds(glp_prob *P, int i, int type, double lb,
       double ub);
 /* set (change) row bounds */
+|#
 
+(define-glpk set-row-bnds! : _prob _int _int _double _double -> _void)
+
+#|
 void glp_set_col_bnds(glp_prob *P, int j, int type, double lb,
       double ub);
 /* set (change) column bounds */
+|#
 
+(define-glpk set-col-bnds! : _prob _int _int _double _double -> _void)
+
+#|
 void glp_set_obj_coef(glp_prob *P, int j, double coef);
 /* set (change) obj. coefficient or constant term */
+|#
 
+(define-glpk set-obj-coef! : _prob _int _double -> _void)
+
+#|
 void glp_set_mat_row(glp_prob *P, int i, int len, const int ind[],
       const double val[]);
 /* set (replace) row of the constraint matrix */
@@ -689,7 +743,7 @@ void glp_delete_prob(glp_prob *P);
 (define delete-prob
   (get-ffi-obj "glp_delete_prob"
                libglpk
-               (_fun _prob-ptr -> _void)))
+               (_fun _prob -> _void)))
 
 #|
 const char *glp_get_prob_name(glp_prob *P);
@@ -699,7 +753,7 @@ const char *glp_get_prob_name(glp_prob *P);
 (define get-prob-name
   (get-ffi-obj "glp_get_prob_name"
                libglpk
-               (_fun _prob-ptr -> _string)))
+               (_fun _prob -> _string)))
 
 #|
 const char *glp_get_obj_name(glp_prob *P);
