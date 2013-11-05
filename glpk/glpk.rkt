@@ -101,9 +101,9 @@ typedef struct glp_prob glp_prob;
 
 ;; we use just pointers to problems...
 (define-cpointer-type _prob _pointer
-  #f ; scheme-to-c
-  (lambda (prob)
-    (when prob (register-finalizer prob delete-prob))
+  #f              ; racket-to-c
+  (lambda (prob)  ; c-to-racket
+    (when prob (register-finalizer prob delete-prob!))
     prob))
 
 #|
@@ -709,113 +709,223 @@ void glp_set_obj_coef(glp_prob *P, int j, double coef);
 void glp_set_mat_row(glp_prob *P, int i, int len, const int ind[],
       const double val[]);
 /* set (replace) row of the constraint matrix */
+|#
 
+(define-glpk set-mat-row! : _prob _int _int (_ptr i _int) (_ptr i _double) -> _void)
+
+#|
 void glp_set_mat_col(glp_prob *P, int j, int len, const int ind[],
       const double val[]);
 /* set (replace) column of the constraint matrix */
+|#
 
+(define-glpk set-mat-col! : _prob _int _int (_ptr i _int) (_ptr i _double) -> _void)
+
+#|
 void glp_load_matrix(glp_prob *P, int ne, const int ia[],
       const int ja[], const double ar[]);
 /* load (replace) the whole constraint matrix */
+|#
 
+(define-glpk load-matrix! : _prob _int (_ptr i _int) (_ptr i _int) (_ptr i _double) -> _void)
+
+#|
 int glp_check_dup(int m, int n, int ne, const int ia[], const int ja[]);
 /* check for duplicate elements in sparse matrix */
+|#
 
+(define-glpk check-dup : _int _int _int (_ptr i _int) (_ptr i _int) -> _int)
+
+#|
 void glp_sort_matrix(glp_prob *P);
 /* sort elements of the constraint matrix */
+|#
 
+(define-glpk sort-matrix! : _prob -> _void)
+
+#|
 void glp_del_rows(glp_prob *P, int nrs, const int num[]);
 /* delete specified rows from problem object */
+|#
 
+(define-glpk del-rows! : _prob _int (_ptr i _int) -> _int)
+
+#|
 void glp_del_cols(glp_prob *P, int ncs, const int num[]);
 /* delete specified columns from problem object */
+|#
 
+(define-glpk del-cols! : _prob _int (_ptr i _int) -> _void)
+
+#|
 void glp_copy_prob(glp_prob *dest, glp_prob *prob, int names);
 /* copy problem object content */
+|#
 
+(define-glpk copy-prob! : _prob _prob _int -> _void)
+
+#|
 void glp_erase_prob(glp_prob *P);
 /* erase problem object content */
+|#
 
+(define-glpk erase-prob! : _prob -> _void)
+
+#|
 void glp_delete_prob(glp_prob *P);
 /* delete problem object */
 |#
 
-(define delete-prob
-  (get-ffi-obj "glp_delete_prob"
-               libglpk
-               (_fun _prob -> _void)))
-
+(define-glpk delete-prob! : _prob -> _void)
+  
 #|
 const char *glp_get_prob_name(glp_prob *P);
 /* retrieve problem name */
 |#
 
-(define get-prob-name
-  (get-ffi-obj "glp_get_prob_name"
-               libglpk
-               (_fun _prob -> _string)))
+(define-glpk get-prob-name : _prob -> _string)
 
 #|
 const char *glp_get_obj_name(glp_prob *P);
 /* retrieve objective function name */
+|#
 
+(define-glpk get-obj-name : _prob -> _string)
+
+#|
 int glp_get_obj_dir(glp_prob *P);
 /* retrieve optimization direction flag */
+|#
 
+(define-glpk get-obj-dir : _prob -> _int)
+
+#|
 int glp_get_num_rows(glp_prob *P);
 /* retrieve number of rows */
+|#
 
+(define-glpk get-num-rows : _prob -> _int)
+
+#|
 int glp_get_num_cols(glp_prob *P);
 /* retrieve number of columns */
+|#
 
+(define-glpk get-num-cols : _prob -> _int)
+
+#|
 const char *glp_get_row_name(glp_prob *P, int i);
 /* retrieve row name */
+|#
 
+(define-glpk get-row-name : _prob _int -> _string)
+
+#|
 const char *glp_get_col_name(glp_prob *P, int j);
 /* retrieve column name */
+|#
 
+(define-glpk get-col-name : _prob _int -> _string)
+
+#|
 int glp_get_row_type(glp_prob *P, int i);
 /* retrieve row type */
+|#
 
+(define-glpk get-row-type : _prob _int -> _int)
+
+#|
 double glp_get_row_lb(glp_prob *P, int i);
 /* retrieve row lower bound */
+|#
 
+(define-glpk get-row-lb : _prob _int -> _double)
+
+#|
 double glp_get_row_ub(glp_prob *P, int i);
 /* retrieve row upper bound */
+|#
 
+(define-glpk get-row-ub : _prob _int -> _double)
+
+#|
 int glp_get_col_type(glp_prob *P, int j);
 /* retrieve column type */
+|#
 
+(define-glpk get-col-type : _prob _int -> _int)
+
+#|
 double glp_get_col_lb(glp_prob *P, int j);
 /* retrieve column lower bound */
+|#
 
+(define-glpk get-col-lb : _prob _int -> _double)
+
+#|
 double glp_get_col_ub(glp_prob *P, int j);
 /* retrieve column upper bound */
+|#
 
+(define-glpk get-col-ub : _prob _int -> _double)
+
+#|
 double glp_get_obj_coef(glp_prob *P, int j);
 /* retrieve obj. coefficient or constant term */
+|#
 
+(define-glpk get-obj-coef : _prob _int -> _double)
+
+#|
 int glp_get_num_nz(glp_prob *P);
 /* retrieve number of constraint coefficients */
+|#
 
+(define-glpk get-num-nz : _prob -> _int)
+
+#|
 int glp_get_mat_row(glp_prob *P, int i, int ind[], double val[]);
 /* retrieve row of the constraint matrix */
+|#
 
+(define-glpk get-mat-row : _prob _int (_ptr i _int) (_ptr o _double) -> _int)
+
+#|
 int glp_get_mat_col(glp_prob *P, int j, int ind[], double val[]);
 /* retrieve column of the constraint matrix */
+|#
 
+(define-glpk get-mat-col : _prob _int (_ptr i _int) (_ptr o _double) -> _int)
+
+#|
 void glp_create_index(glp_prob *P);
 /* create the name index */
+|#
 
+(define-glpk create-index! : _prob -> _void)
+
+#|
 int glp_find_row(glp_prob *P, const char *name);
 /* find row by its name */
+|#
 
+(define-glpk find-row : _prob _string -> _int)
+
+#|
 int glp_find_col(glp_prob *P, const char *name);
 /* find column by its name */
+|#
 
+(define-glpk find-col : _prob _string -> _int)
+
+#|
 void glp_delete_index(glp_prob *P);
 /* delete the name index */
+|#
 
+(define-glpk delete-index! : _prob -> _void)
+
+#|
 void glp_set_rii(glp_prob *P, int i, double rii);
 /* set (change) row scale factor */
 
