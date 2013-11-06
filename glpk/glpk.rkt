@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require ffi/unsafe
+         ffi/unsafe/cvector
          racket/runtime-path
          
          (for-syntax racket/base))
@@ -42,6 +43,16 @@
        #'(define name
            (get-ffi-obj glp_name libglpk
               (_fun type ...))))]))
+
+
+;; Symbolic name: up to 255 characters
+(define _sname
+  (make-ctype _string
+              (lambda (str)
+                (when (and str ((string-length str) . > . 255))
+                  (error 'symbolic-name "should have up to 255 characters"))
+                str)
+              #f))
 
 ;; headers taken from release of glpk.h
 
@@ -636,14 +647,14 @@ void glp_set_prob_name(glp_prob *P, const char *name);
 /* assign (change) problem name */
 |#
 
-(define-glpk set-prob-name! : _prob _string -> _void)
+(define-glpk set-prob-name! : _prob _sname -> _void)
 
 #|
 void glp_set_obj_name(glp_prob *P, const char *name);
 /* assign (change) objective function name */
 |#
 
-(define-glpk set-obj-name! : _prob _string -> _void)
+(define-glpk set-obj-name! : _prob _sname -> _void)
 
 #|
 void glp_set_obj_dir(glp_prob *P, int dir);
@@ -673,14 +684,14 @@ void glp_set_row_name(glp_prob *P, int i, const char *name);
 /* assign (change) row name */
 |#
 
-(define-glpk set-row-name! : _prob _int _string -> _void)
+(define-glpk set-row-name! : _prob _int _sname -> _void)
 
 #|
 void glp_set_col_name(glp_prob *P, int j, const char *name);
 /* assign (change) column name */
 |#
 
-(define-glpk set-col-name! : _prob _int _string -> _void)
+(define-glpk set-col-name! : _prob _int _sname -> _void)
 
 #|
 void glp_set_row_bnds(glp_prob *P, int i, int type, double lb,
@@ -727,7 +738,7 @@ void glp_load_matrix(glp_prob *P, int ne, const int ia[],
 /* load (replace) the whole constraint matrix */
 |#
 
-(define-glpk load-matrix! : _prob _int (_ptr i _int) (_ptr i _int) (_ptr i _double) -> _void)
+(define-glpk load-matrix! : _prob _int _cvector _cvector _cvector -> _void)
 
 #|
 int glp_check_dup(int m, int n, int ne, const int ia[], const int ja[]);
@@ -961,7 +972,11 @@ void glp_cpx_basis(glp_prob *P);
 
 int glp_simplex(glp_prob *P, const glp_smcp *parm);
 /* solve LP problem with the simplex method */
+|#
 
+(define-glpk simplex! : _prob _pointer -> _int)
+
+#|
 int glp_exact(glp_prob *P, const glp_smcp *parm);
 /* solve LP problem in exact arithmetic */
 
@@ -979,7 +994,11 @@ int glp_get_dual_stat(glp_prob *P);
 
 double glp_get_obj_val(glp_prob *P);
 /* retrieve objective value (basic solution) */
+|#
 
+(define-glpk get-obj-val : _prob -> _double)
+
+#|
 int glp_get_row_stat(glp_prob *P, int i);
 /* retrieve row status */
 
@@ -994,7 +1013,11 @@ int glp_get_col_stat(glp_prob *P, int j);
 
 double glp_get_col_prim(glp_prob *P, int j);
 /* retrieve column primal value (basic solution) */
+|#
 
+(define-glpk get-col-prim : _prob _int -> _double)
+
+#|
 double glp_get_col_dual(glp_prob *P, int j);
 /* retrieve column dual value (basic solution) */
 
