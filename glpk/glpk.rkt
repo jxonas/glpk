@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require ffi/unsafe
-         ffi/unsafe/cvector
+         ffi/cvector
          racket/runtime-path
          
          (for-syntax racket/base))
@@ -745,7 +745,7 @@ int glp_check_dup(int m, int n, int ne, const int ia[], const int ja[]);
 /* check for duplicate elements in sparse matrix */
 |#
 
-(define-glpk check-dup : _int _int _int (_ptr i _int) (_ptr i _int) -> _int)
+(define-glpk check-dup : _int _int _int _cvector _cvector -> _int)
 
 #|
 void glp_sort_matrix(glp_prob *P);
@@ -899,8 +899,9 @@ int glp_get_mat_row(glp_prob *P, int i, int ind[], double val[]);
 /* retrieve row of the constraint matrix */
 |#
 
-(define-glpk get-mat-row : _prob _int (_ptr i _int) (_ptr o _double) -> _int)
-
+(define-glpk get-mat-row : _prob _int _cvector _cvector
+  -> (r : _int))
+  
 #|
 int glp_get_mat_col(glp_prob *P, int j, int ind[], double val[]);
 /* retrieve column of the constraint matrix */
