@@ -32,6 +32,9 @@
 (define ja (cvector _int    0   1   2   3   1    1   2   2   3   3  ))
 (define ar (cvector _double 0.0 1.0 1.0 1.0 10.0 2.0 4.0 2.0 5.0 6.0))
 
+(unless (zero? (check-dup 3 3 9 ia ja))
+  (error 'glpk-test "duplicate elements"))
+
 (load-matrix! lp 9 ia ja ar)
 (void (simplex! lp #f))
 
